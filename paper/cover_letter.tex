@@ -1,0 +1,54 @@
+\documentclass[11pt]{letter}
+\usepackage[margin=1.1in]{geometry}
+\signature{Krishna Harish\\Elkins High School, Missouri City, TX\\krishnaharish2009@gmail.com}
+\address{Krishna Harish\\Elkins High School\\Missouri City, TX, USA}
+\begin{document}
+\begin{letter}{The Editors\\Journal of Applied and Computational Topology}
+
+\opening{Dear Editors,}
+
+Please consider the enclosed manuscript, ``Directed Weisfeiler--Leman
+refinement versus the invariants of the magnitude--path spectral
+sequence,'' for publication in the Journal of Applied and Computational
+Topology.
+
+The magnitude--path spectral sequence organizes magnitude homology, path
+homology, and reachability homology of a digraph into pages of a single
+object (Asao 2023; Hepworth and Roff 2024, 2025), while directed
+Weisfeiler--Leman color refinement bounds the separating power of
+message-passing neural networks on digraphs. For undirected graphs the
+analogous comparison, persistent homology against the WL hierarchy, was
+carried out by Ballester and Rieck (LoG 2024); no placement of the
+directed homology theories relative to directed refinement existed. This
+paper carries out that comparison exhaustively and exactly over all
+1,550,786 digraphs on three to six vertices, and proves, among other
+results: the two families are incomparable, with minimal witnesses
+determined exactly; the bigraded rank function of the first page of the
+spectral sequence determines neither its second page nor its target
+(minimal witnesses on five vertices, via a family in which the first
+page degenerates to counting while path homology recovers the Betti
+numbers of the underlying graph); magnitude homology separates digraphs
+on which both reciprocity-aware refinement and the directed distance
+multiset agree; and a component-counting description of degree-two
+magnitude homology, building on a basis of Ivanov and Mukoseev,
+identifies the mechanism (round-trip structure modulo geodesic
+fillability) with closed formulas.
+
+Every claim is either proved or is a finite computation in exact
+rational arithmetic; two independent implementations cross-validate
+each other, the degree-two formulas were verified mechanically on all
+1,550,786 digraphs, and every witness pair was re-verified from
+scratch. All code and data are public at
+https://github.com/krishnatheaverage/mpss-dwl-expressivity (release
+v1.0.0), including scripts reproducing every number and table in the
+paper.
+
+This work is not under consideration elsewhere, and I have no competing
+interests. Researchers active on the magnitude--path spectral sequence
+and on the expressivity of topological descriptors in graph learning,
+for example the author groups cited above, would be well placed to
+referee it.
+
+\closing{Sincerely,}
+\end{letter}
+\end{document}
