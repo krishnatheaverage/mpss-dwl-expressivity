@@ -18,7 +18,16 @@ from src.maghom import magnitude_homology_ranks
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def load_n6():
+    """Class counts and split counts for n=6 from analyze6.py output."""
+    path = ROOT / "results" / "analysis_n6.json"
+    if not path.exists():
+        return None
+    return json.loads(path.read_text())
+
+
 def class_count_table():
+    n6 = load_n6()
     lines = [
         r"\begin{tabular}{lrrrrrrr}",
         r"\toprule",
@@ -39,11 +48,32 @@ def class_count_table():
             f"{n} & {len(rows)} & {cnt['dwl']} & {cnt['mh']} & {cnt['dist']}"
             f" & {cnt['ph']} & {cnt['rh']} & {cnt['all']} \\\\"
         )
+    if n6:
+        c = n6["classes"]
+        lines.append(
+            f"6 & {n6['total']} & {c['dwl']} & {c['mh']} & {c['dist']}"
+            f" & {c['ph']} & {c['rh']} & {c['hom']} \\\\"
+        )
     lines += [r"\bottomrule", r"\end{tabular}"]
     return "\n".join(lines)
 
 
+N6KEY = {
+    ("dwl_key", "mh_key"): "dwl|mh",
+    ("dwl_key", "ph_key"): "dwl|ph",
+    ("dwl_key", "dist_key"): "dwl|dist",
+    ("dist_key", "dwl_key"): "dist|dwl",
+    ("mh_key", "dwl_key"): "mh|dwl",
+    ("mh_key", "ph_key"): "mh|ph",
+    ("ph_key", "mh_key"): "ph|mh",
+    ("ph_key", "rh_key"): "ph|rh",
+    ("all_hom_key", "dwl_key"): "hom|dwl",
+    ("mhph_key", "rh_key"): "mhph|rh",
+}
+
+
 def split_table():
+    n6 = load_n6()
     labels = [
         ("dwl_key", "mh_key", r"D-WL-equal, $\MH$-different"),
         ("dwl_key", "ph_key", r"D-WL-equal, $\PH$-different"),
@@ -54,6 +84,7 @@ def split_table():
         ("ph_key", "mh_key", r"$\PH$-equal, $\MH$-different"),
         ("ph_key", "rh_key", r"$\PH$-equal, $\RH$-different"),
         ("all_hom_key", "dwl_key", r"$\MH{+}\PH{+}\RH$-equal, D-WL-different"),
+        ("mhph_key", "rh_key", r"$\MH{+}\PH$-equal, $\RH$-different"),
     ]
     per_n = {}
     for n in (3, 4, 5):
@@ -63,23 +94,21 @@ def split_table():
         vals = {}
         for ki, kj, _ in labels:
             vals[(ki, kj)] = split_witnesses(rows, ki, kj)[0]
-        vals[("mhph_key", "rh_key")] = split_witnesses(rows, "mhph_key", "rh_key")[0]
         per_n[n] = vals
+    header = r"relation & $n=3$ & $n=4$ & $n=5$"
+    if n6:
+        header += r" & $n=6$"
     lines = [
-        r"\begin{tabular}{lrrr}",
+        r"\begin{tabular}{lrrr" + ("r" if n6 else "") + "}",
         r"\toprule",
-        r"relation & $n=3$ & $n=4$ & $n=5$ \\",
+        header + r" \\",
         r"\midrule",
     ]
     for ki, kj, lab in labels:
-        lines.append(
-            f"{lab} & {per_n[3][(ki,kj)]} & {per_n[4][(ki,kj)]} & {per_n[5][(ki,kj)]} \\\\"
-        )
-    lines.append(
-        r"$\MH{+}\PH$-equal, $\RH$-different & "
-        + " & ".join(str(per_n[n][("mhph_key", "rh_key")]) for n in (3, 4, 5))
-        + r" \\"
-    )
+        row = f"{lab} & {per_n[3][(ki,kj)]} & {per_n[4][(ki,kj)]} & {per_n[5][(ki,kj)]}"
+        if n6:
+            row += f" & {n6['splits'][N6KEY[(ki, kj)]]}"
+        lines.append(row + r" \\")
     lines += [r"\bottomrule", r"\end{tabular}"]
     return "\n".join(lines)
 
