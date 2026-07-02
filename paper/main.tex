@@ -1,0 +1,733 @@
+\documentclass[pdflatex,sn-mathphys,Numbered]{sn-jnl}
+
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{amsthm}
+\usepackage{mathrsfs}
+\usepackage[title]{appendix}
+\usepackage{xcolor}
+\usepackage{textcomp}
+\usepackage{manyfoot}
+\usepackage{booktabs}
+
+\theoremstyle{thmstyleone}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{question}[theorem]{Question}
+\theoremstyle{thmstyletwo}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{convention}[theorem]{Convention}
+
+\newcommand{\MH}{\mathrm{MH}}
+\newcommand{\PH}{\mathrm{PH}}
+\newcommand{\RH}{\mathrm{RH}}
+\newcommand{\MC}{\mathrm{MC}}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\dwl}{\mathrm{DWL}}
+\newcommand{\dwlp}{\mathrm{DWL}^{+}}
+
+\input{tables_generated}
+
+\raggedbottom
+
+\begin{document}
+
+\title[Directed Weisfeiler--Leman refinement and digraph homology]{Directed
+Weisfeiler--Leman refinement versus the invariants of the magnitude--path
+spectral sequence}
+
+\author*[1]{\fnm{Krishna} \sur{Harish}}\email{krishnaharish2009@gmail.com}
+
+\affil*[1]{\orgname{Elkins High School}, \orgaddress{\city{Missouri City},
+\state{TX}, \country{USA}}}
+
+\abstract{Magnitude homology, path homology, and reachability homology are
+organized by the magnitude--path spectral sequence (MPSS) of a digraph:
+magnitude homology is its first page, path homology sits on an axis of its
+second page, and reachability homology is its target. Directed
+Weisfeiler--Leman color refinement (D-WL) is the standard upper bound for
+the separating power of message-passing neural networks on digraphs. We
+give the first systematic comparison of the two families, the directed
+counterpart of the known placement of persistent homology in the undirected
+WL hierarchy. First, the families are incomparable: the directed $4$-cycle
+and the disjoint union of two digons are D-WL-equivalent but are separated
+by all three homology theories, while an in-star and a directed path of
+length two are separated by D-WL although all three homology theories
+agree; by exhaustive exact computation over all $9{,}842$ digraphs on
+three, four, and five vertices, both witnesses are minimal. The incomparability
+persists for the reciprocity-aware refinement $\dwlp$, with minimal witness
+exactly at six vertices. Second, the bigraded rank function of the first
+page of the MPSS does not determine the second page: any two digraphs in
+which every vertex is a source or a sink and which share vertex and arc
+counts have isomorphic magnitude homology in every bidegree, yet path
+homology recovers the Betti numbers of the underlying graph; on at most
+four vertices, exhaustively, no such rank-equal pair with distinct path
+homology exists, so five vertices is minimal. Third, magnitude homology
+separates D-WL-equivalent digraphs with equal directed-distance multisets,
+so its excess power over refinement is not distance bookkeeping; the
+minimal witnesses (five vertices, none at four or fewer) pit the symmetric
+digraph of the $5$-cycle against non-circulant partial orientations.
+All homology ranks are computed exactly over $\QQ$; we release the
+accompanying toolkit, to our knowledge the first for magnitude, path, and
+reachability homology of general digraphs in a single exact-arithmetic
+framework.}
+
+\keywords{magnitude homology, path homology, reachability homology,
+Weisfeiler--Leman, digraphs, graph neural networks, expressivity}
+
+\maketitle
+
+\section{Introduction}\label{sec:intro}
+
+Two research communities have, largely independently, built graph-level
+invariants of directed graphs.
+
+On the applied-topology side, a family of homology theories for digraphs
+has crystallized over the past decade: the path homology of Grigor'yan,
+Lin, Muranov, and Yau \cite{GLMY12,GLMY14}, sensitive to the composability
+of arcs; the magnitude homology of Hepworth--Willerton and
+Leinster--Shulman \cite{HepworthWillerton17,LeinsterShulman21},
+categorifying Leinster's magnitude \cite{Leinster13} and defined for any
+digraph through its shortest-path quasimetric; and the reachability
+homology of Hepworth and Roff \cite{HepworthRoffIMRN}. These are not
+independent inventions: Asao \cite{Asao23} constructed a spectral sequence,
+the magnitude--path spectral sequence (MPSS), whose first page is magnitude
+homology and whose second page contains path homology, and Hepworth and
+Roff \cite{HepworthRoff24,HepworthRoffIMRN} showed that it converges to
+reachability homology. The MPSS thus organizes the three theories into
+pages of a single object.
+
+On the machine-learning side, the separating power of message-passing
+graph neural networks is bounded by Weisfeiler--Leman color refinement
+\cite{Xu19,Morris19}; for digraphs the relevant procedure is directed
+color refinement (here D-WL), which refines vertex colors by the multisets
+of in-neighbor and out-neighbor colors separately \cite{GroheColRef,
+Jaume19}. For undirected graphs, the relationship between persistent
+homology and the WL hierarchy has been worked out in detail by Ballester
+and Rieck \cite{BallesterRieck25}, but that study is explicitly restricted
+to undirected graphs, and we are not aware of any placement of the
+digraph homology theories above relative to directed refinement. The
+closest prior results are single-invariant comparisons within topology,
+such as the digraph pair of Chaplin, Harrington, and Tillmann
+\cite{ChaplinHT24} distinguishing path homology from directed flag
+complex homology.
+
+This paper carries out the comparison. Our contributions are as follows;
+throughout, $\MH$, $\PH$, $\RH$ denote magnitude, path, and reachability
+homology over $\QQ$ (Section~\ref{sec:background}), and all computational
+claims are exact rational computations, exhaustive over all digraphs on
+three, four, and five vertices up to isomorphism ($16 + 218 + 9{,}608 =
+9{,}842$ digraphs; the four digraphs on at most two vertices are pairwise
+D-WL-distinguished, so all minimality thresholds are meaningful).
+
+\begin{enumerate}
+\item \textbf{Incomparability} (Theorem~\ref{thm:incomparable}). D-WL and
+the MPSS invariants each separate digraph pairs the other cannot. The
+directed $4$-cycle versus two digons is D-WL-equivalent but separated by
+each of $\MH$, $\PH$, $\RH$; an in-star versus a directed $2$-path is
+D-WL-separated while all three homology theories agree. Both witnesses are
+minimal by exhaustive search. For the reciprocity-aware refinement
+$\dwlp$, which additionally distinguishes reciprocal neighbors, the
+homology-beats-refinement witness moves to the directed $6$-cycle versus
+two directed triangles, minimal at exactly six vertices
+(Theorem~\ref{thm:dwlplus}).
+\item \textbf{The first page does not determine the second}
+(Theorem~\ref{thm:e1e2}). On the family of digraphs in which every vertex
+is a source or a sink, all magnitude homology is concentrated in bidegrees
+$(0,0)$ and $(1,1)$ with ranks $(n, m)$, while path homology and
+reachability homology compute the Betti numbers of the underlying
+undirected graph. Consequently the bigraded ranks of the $E^1$ page of the
+MPSS do not determine its $E^2$ page, its limit, or even weak
+connectivity. Exhaustively, no pair of digraphs on at most four vertices
+with equal $\MH$ ranks has distinct path homology, so the minimal such
+pair, the in-star $K_{4\to 1}$ versus $K_{2\to 2}\sqcup\ast$, lives on
+five vertices.
+\item \textbf{Beyond distances} (Theorem~\ref{thm:beyonddist}). Magnitude
+homology ranks do not determine the directed-distance multiset
+(Proposition~\ref{prop:mhnotdist}), and conversely magnitude homology
+separates D-WL-equivalent pairs with \emph{equal} distance multisets:
+minimally, on five vertices, the symmetric digraph of the $5$-cycle
+against a partial orientation with three digons, where path homology even
+distinguishes a $1$-dimensional from a $2$-dimensional hole. All such
+witnesses on at most five vertices carry unequal digon counts, and the
+reciprocity-aware $\dwlp$ together with distances subsumes the homology
+package in this range; whether magnitude homology exceeds
+$(\dwlp,\text{distances})$ on larger digraphs is open
+(Question~\ref{q:dwlplusdist}).
+\item \textbf{The landscape} (Section~\ref{sec:landscape}). We tabulate
+the partition of all $9{,}842$ digraphs on at most five vertices induced
+by each invariant and each pairwise refinement relation, including that
+$\PH$ does not determine $\RH$, while $\MH$ and $\PH$ jointly determine
+$\RH$ throughout this range (Question~\ref{q:mhphrh}).
+\item \textbf{Software.} The exact-arithmetic toolkit and all data are
+released; to our knowledge it is the first public implementation
+computing magnitude homology of general digraphs, and the first computing
+the three MPSS-related theories in one framework. (For undirected graphs,
+computations of graph magnitude homology appear in the literature, for
+example via algebraic Morse theory \cite{Gu18}.)
+\end{enumerate}
+
+Beyond the specific statements, the results calibrate expectations for
+homology-based features in directed graph learning: the MPSS invariants
+are neither refinements nor coarsenings of the D-WL bound that governs
+standard directed message passing, so they are candidates for genuinely
+complementary features, but they also miss elementary refinement
+information (weak connectivity is invisible to magnitude homology, while
+degree profiles separate what all three theories jointly cannot). We
+return to this in Section~\ref{sec:discussion}.
+
+\subsection*{Relation to prior work}
+
+Ballester and Rieck \cite{BallesterRieck25} place persistent homology of
+filtered clique complexes within the (undirected) WL hierarchy; our
+results are the directed analogue at the level of unfiltered digraph
+homology theories, and Section~\ref{sec:discussion} discusses the
+persistent directed extension as future work. Path-based neural
+architectures \cite{Michel23} exceed 1-WL by aggregating over paths but
+involve no homology. Within topology, comparisons among directed
+invariants exist \cite{ChaplinHT24,CaputiMR25}, but none against
+refinement hierarchies. On the computational side, Menara and Manzoni
+\cite{MenaraManzoni24} analyze the parameterized complexity of Eulerian
+magnitude homology of graphs; our sweep is feasible precisely because the
+digraphs are small and the arithmetic is exact. The MPSS papers
+\cite{Asao23,HepworthRoff24,HepworthRoffIMRN} study the algebraic
+structure of the tower; our Theorem~\ref{thm:e1e2} is, to our knowledge,
+the first explicit witness that the rank function of $E^1$ does not
+determine $E^2$, complementing their structural results. Persistent
+magnitude homology has just been given foundations \cite{BiFengLiWu26};
+its separating power is untouched and inherits our lower bounds.
+
+\section{Background and conventions}\label{sec:background}
+
+\begin{convention}
+A \emph{digraph} $G = (V, A)$ is a finite set $V$ with a set
+$A \subseteq V \times V$ of ordered pairs (\emph{arcs}) with no loops;
+$n = |V|$, $m = |A|$. A \emph{digon} is a pair of reciprocal arcs
+$\{(u,v),(v,u)\}$. The \emph{quasimetric} $d(x,y) \in \{0,1,2,\dots\}
+\cup \{\infty\}$ is the directed shortest-path distance. All homology is
+taken with coefficients in $\QQ$ and we record ranks. Digraph
+enumeration is up to isomorphism via nauty \cite{nauty}; the counts
+$16$, $218$, $9{,}608$ for $n = 3,4,5$ match OEIS A000273.
+\end{convention}
+
+\subsection{Directed color refinement}
+
+D-WL iteratively refines a vertex coloring: all vertices start with a
+common color, and the color of $v$ at round $t{+}1$ is the (injectively
+encoded) triple of its color at round $t$, the multiset of round-$t$
+colors of its in-neighbors, and the multiset of round-$t$ colors of its
+out-neighbors \cite{GroheColRef,Jaume19}. Since a partition of an $n$-set
+can strictly refine at most $n-1$ times, the partition stabilizes within
+$n$ rounds. Two digraphs are \emph{D-WL-equivalent} if the color
+histograms agree at every round (colors encoded canonically across
+graphs). This is the separating power that bounds standard directed
+message-passing networks, in the same way that 1-WL bounds GNNs on
+undirected graphs \cite{Xu19,Morris19}.
+
+We will also use a natural strengthening. The \emph{reciprocity-aware}
+refinement $\dwlp$ refines by the triple of multisets over in-only
+neighbors, out-only neighbors, and reciprocal neighbors (those joined to
+$v$ by a digon). $\dwlp$ refines D-WL; it corresponds to message passing
+that treats reciprocated and unreciprocated arcs as different edge types,
+as many practical digraph architectures do.
+
+\subsection{Magnitude homology}
+
+Following \cite{HepworthWillerton17,LeinsterShulman21}, applied to the
+quasimetric space $(V, d)$: for $k \ge 0$ and $l \ge 0$, the chain group
+$\MC_{k,l}(G)$ is the $\QQ$-span of tuples $(x_0, \dots, x_k)$ of
+vertices with $x_{i-1} \ne x_i$, $d(x_{i-1}, x_i) < \infty$, and
+$\sum_{i=1}^{k} d(x_{i-1}, x_i) = l$. The differential is
+$\partial = \sum_{i=1}^{k-1} (-1)^i \partial_i$, where $\partial_i$
+deletes $x_i$ if $d(x_{i-1},x_i) + d(x_i,x_{i+1}) = d(x_{i-1},x_{i+1})$
+and is zero on the tuple otherwise. Magnitude homology $\MH_{k,l}(G)$ is
+the homology of the $l$-graded piece. Its graded Euler characteristic
+recovers the magnitude power series; we use this identity as an
+end-to-end correctness test of our implementation
+(Section~\ref{sec:landscape}). By $\MH$ \emph{ranks} we always mean the
+function $(k,l) \mapsto \dim_\QQ \MH_{k,l}$.
+
+\subsection{Path homology}
+
+Following \cite{GLMY12,GLMY14}: an \emph{allowed} $p$-path is a vertex
+sequence $(x_0,\dots,x_p)$ each consecutive pair of which is an arc. On
+the span of \emph{regular} paths (consecutive entries distinct) one takes
+the alternating face boundary with irregular faces set to zero, and
+$\Omega_p = \{\omega \in \operatorname{span}(A_p) : \partial\omega \in
+\operatorname{span}(A_{p-1})\}$ is the space of $\partial$-invariant
+allowed chains. Path homology $\PH_p(G)$ is the homology of
+$(\Omega_\ast, \partial)$. We compute $\PH_0, \PH_1, \PH_2$.
+
+\subsection{Reachability homology and the MPSS}
+
+Reachability homology $\RH_\ast(G)$ \cite{HepworthRoffIMRN} is the
+homology of the nerve of the reachability preorder ($x \preceq y$ iff
+$d(x,y) < \infty$). The preorder is equivalent, as a category, to its
+condensation poset (strong components ordered by reachability), so
+$\RH_\ast(G)$ is the simplicial homology of the order complex of the
+condensation; this is how we compute it, in dimensions $0$ to $3$.
+Asao \cite{Asao23} constructs the MPSS with $E^1 \cong \MH$; the diagonal
+of its $E^2$ page is reduced path homology, and the sequence converges to
+reachability homology \cite{HepworthRoff24,HepworthRoffIMRN}. We only use
+this organizational fact: $\MH$, $\PH$, $\RH$ are, respectively, the
+first page, part of the second page, and the target of one spectral
+sequence.
+
+\subsection{Windows, and what is absolute}\label{subsec:windows}
+
+Sweep-level computations use the windows $k \le 3$ (all $l$) for $\MH$,
+$p \le 2$ for $\PH$, and dimensions $\le 3$ for $\RH$. An
+\emph{inequality} of invariants observed in a window is absolute: the
+full invariants differ. An \emph{equality} claim is, in general, relative
+to the window and is stated as such; the star witnesses of
+Theorem~\ref{thm:e1e2} are the exception, since for them the full
+magnitude homology is determined by hand in all bidegrees.
+
+\section{Structural lemmas}\label{sec:lemmas}
+
+\begin{lemma}\label{lem:regular}
+Let $G$ and $H$ be digraphs on $n$ vertices in which every vertex has
+out-degree $a$ and in-degree $b$. Then $G$ and $H$ are D-WL-equivalent.
+If moreover neither contains a digon, then $G$ and $H$ are
+$\dwlp$-equivalent.
+\end{lemma}
+
+\begin{proof}
+By induction on the round: all vertices of both digraphs share the
+initial color, and if all share a color $c_t$ at round $t$, then every
+vertex of either digraph has the same signature
+$(c_t, \{c_t^{(b)}\}, \{c_t^{(a)}\})$, hence the same round-$(t{+}1)$
+color. The histograms therefore agree at every round. In the digon-free
+case the reciprocal multiset is empty for every vertex and the same
+induction applies to $\dwlp$.
+\end{proof}
+
+\begin{lemma}\label{lem:mh1}
+For every digraph $G$: $\MH_{0,0}(G) \cong \QQ^{n}$,
+$\MH_{1,1}(G) \cong \QQ^{m}$, and $\MH_{1,l}(G) = 0$ for all $l \ge 2$.
+\end{lemma}
+
+\begin{proof}
+Degree $0$ is immediate. $\MC_{1,l}$ is spanned by ordered pairs at
+distance exactly $l$, and the outgoing differential vanishes on
+$\MC_{1,\ast}$ (there are no interior vertices to delete). At $l = 1$
+the pairs at distance $1$ are exactly the arcs and $\MC_{2,1} = 0$, so
+$\MH_{1,1} \cong \QQ^m$. For $l \ge 2$, let $d(x,y) = l$ and let $z$ be
+the first interior vertex of a geodesic from $x$ to $y$; then
+$d(x,z) = 1$ and $d(z,y) = l - 1$, so $(x,z,y) \in \MC_{2,l}$ and
+$\partial(x,z,y) = -(x,y)$. Hence the incoming differential is
+surjective and $\MH_{1,l} = 0$.
+\end{proof}
+
+Thus all information carried by magnitude homology beyond the vertex and
+arc counts lives in homological degrees $k \ge 2$. The next observation
+identifies a family where those degrees vanish identically.
+
+\begin{lemma}\label{lem:sourcesink}
+Call a digraph \emph{layered} if every vertex is a source or a sink
+(no vertex has both an incoming and an outgoing arc). If $G$ is layered
+with $n$ vertices, $m$ arcs, and $c$ weakly connected components, then:
+\begin{enumerate}
+\item $\MC_{k,l}(G) = 0$ for all $k \ge 2$, hence $\MH(G)$ has rank $n$
+at $(0,0)$, rank $m$ at $(1,1)$, and rank $0$ elsewhere;
+\item $\PH_0(G) \cong \QQ^{c}$, $\PH_1(G) \cong \QQ^{\,m - n + c}$, and
+$\PH_p(G) = 0$ for $p \ge 2$;
+\item $\RH_0(G) \cong \QQ^{c}$, $\RH_1(G) \cong \QQ^{\,m - n + c}$, and
+$\RH_p(G) = 0$ for $p \ge 2$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+(1) A tuple $(x_0, x_1, x_2, \dots)$ in $\MC_{k,l}$ with $k \ge 2$
+requires $d(x_0, x_1) < \infty$ and $d(x_1, x_2) < \infty$ with
+$x_0 \ne x_1 \ne x_2$, so $x_1$ has both an incoming and an outgoing arc
+(any finite positive distance requires at least one arc out of the source
+and into the target), contradicting layeredness.
+(2) In a layered digraph there are no allowed $2$-paths, so
+$\Omega_p = 0$ for $p \ge 2$, $\Omega_1$ is spanned by the arcs, and
+$\Omega_0$ by the vertices. The complex
+$0 \to \QQ^m \xrightarrow{\;\partial\;} \QQ^n \to 0$ is the simplicial
+chain complex of the underlying undirected graph, whose homology is
+$(\QQ^c, \QQ^{m-n+c})$.
+(3) Layeredness forbids digons and directed $2$-paths, so the
+reachability preorder is the height-one poset whose comparabilities are
+the arcs, all strong components are singletons, and the order complex is
+the underlying undirected graph (its edges are the arcs; there are no
+chains of length two). The claim follows as in (2).
+\end{proof}
+
+\begin{proposition}\label{prop:mhnotdist}
+Magnitude homology ranks do not determine the multiset of directed
+distances. Minimal witnesses exist on three vertices: the in-star
+$S$ ($u \to w \leftarrow v$) and the directed path
+$P$ ($u \to w \to v$) satisfy $\MH_{k,l}(S) \cong \MH_{k,l}(P)$ for all
+$(k,l)$, but the finite distance multisets are $\{1,1\}$ and
+$\{1,1,2\}$.
+\end{proposition}
+
+\begin{proof}
+$S$ is layered, so by Lemma~\ref{lem:sourcesink} its $\MH$ is
+$(3, 2)$ at bidegrees $(0,0), (1,1)$ and zero elsewhere. In $P$, the only
+tuples beyond degree one are built from the composable pair
+$u \to w \to v$: $\MC_{2,2}(P)$ is spanned by $(u,w,v)$, and
+$\MC_{k,l}(P) = 0$ for $k \ge 3$ (nothing leaves $v$). Since
+$d(u,w) + d(w,v) = 2 = d(u,v)$, we get
+$\partial(u,w,v) = -(u,v) \ne 0$, so the single degree-$2$ chain is not a
+cycle and it kills the single class of $\MC_{1,2}$: explicitly
+$\MH_{1,2}(P) = 0$, $\MH_{2,2}(P) = 0$. Hence $\MH(P)$ also equals
+$(3,2)$ at $(0,0), (1,1)$ and zero elsewhere, while $d(u,v) = 2$ appears
+only in $P$.
+\end{proof}
+
+\section{Incomparability}\label{sec:incomparable}
+
+\begin{theorem}\label{thm:incomparable}
+D-WL and the family $\{\MH, \PH, \RH\}$ are incomparable in separating
+power:
+\begin{enumerate}
+\item[(a)] The directed $4$-cycle $C_4$ and the disjoint union of two
+digons $D_2 \sqcup D_2$ are D-WL-equivalent, but each of $\MH$, $\PH$,
+$\RH$ separates them. No such pair exists on at most three vertices.
+\item[(b)] The in-star $S$ and directed path $P$ of
+Proposition~\ref{prop:mhnotdist} satisfy
+$\MH(S) \cong \MH(P)$ (all bidegrees), $\PH_\ast(S) \cong \PH_\ast(P)$,
+$\RH_\ast(S) \cong \RH_\ast(P)$, but D-WL separates them at round one.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(a) Both digraphs are $1$-in-$1$-out regular on four vertices, so
+Lemma~\ref{lem:regular} gives D-WL-equivalence. $\RH$: $C_4$ is strongly
+connected, so its reachability preorder is equivalent to a point and
+$\RH_0 = \QQ$; the union of digons has two strong components, mutually
+unreachable, giving $\RH_0 = \QQ^2$. $\PH$: $\PH_0$ counts weak
+components ($1$ versus $2$); moreover $\PH_1(C_4) = \QQ$ (the four arcs
+support the cycle class $\sum e_i$, and $\Omega_2 = 0$ since every
+allowed $2$-path $(x, x{+}1, x{+}2)$ has the non-allowed face
+$(x, x{+}2)$, and these four faces are distinct, so no linear combination
+cancels them), while $\PH_1(D_2 \sqcup D_2) = 0$: for a single digon on
+$\{x,y\}$, $\Omega_1$ is spanned by $e_{xy}, e_{yx}$ with $\partial$ of
+rank $1$, and the surviving cycle $e_{xy} + e_{yx}$ is a boundary, since
+the allowed $2$-path $(x,y,x)$ is $\partial$-invariant with
+$\partial(x,y,x) = e_{yx} + e_{xy}$ (the middle face $(x,x)$ is
+irregular, hence zero), so $\PH_1 = 0$ for each digon and their disjoint
+union.
+$\MH$: the machine computation (exact over $\QQ$, Table~\ref{tab:star})
+gives $\MH_{2,4}(C_4) = \QQ^4$ while $\MH_{2,4}(D_2 \sqcup D_2) = 0$;
+alternatively, the digon union is the symmetric digraph of a forest-like
+graph ($2 K_2$), whose magnitude homology is diagonal
+\cite{HepworthWillerton17}, while $C_4$ has nonzero off-diagonal ranks.
+Since a rank inequality observed in any bidegree is absolute
+(Section~\ref{subsec:windows}), all three separations hold. Minimality is
+the exhaustive $n = 3$ computation (Table~\ref{tab:splits}: zero D-WL
+classes split by any homology at $n = 3$).
+
+(b) Magnitude homology equality is Proposition~\ref{prop:mhnotdist}.
+$\PH$: both digraphs are weakly connected with two arcs whose boundaries
+are linearly independent, and in both $\Omega_2 = 0$ ($S$ has no allowed
+$2$-path; in $P$ the single allowed $2$-path $(u,w,v)$ has non-allowed
+face $(u,v)$), so $\PH_\ast = (\QQ, 0, 0)$ for both. $\RH$: the
+reachability posets are $u, v \prec w$ (order complex: a path, hence
+contractible) and $u \prec w \prec v$ with $u \prec v$ (order complex: a
+$2$-simplex, contractible), so $\RH_\ast = (\QQ, 0, 0, 0)$ for both.
+D-WL separates at round one: the in-degree multisets are
+$\{0,0,2\}$ and $\{0,1,1\}$.
+\end{proof}
+
+\begin{table}[t]
+\centering
+\caption{Magnitude homology ranks of the star witnesses of
+Theorem~\ref{thm:incomparable}(a) and Theorem~\ref{thm:beyonddist}
+(machine-generated; nonzero bidegrees $(k,l)$ with $k \le 3$).}
+\label{tab:star}
+\begin{tabular}{ll}
+\toprule
+digraph & nonzero $\MH_{k,l}$, $k \le 3$ \\
+\midrule
+directed $C_4$ & \mhcfour \\
+$D_2 \sqcup D_2$ & \mhdigons \\
+symmetric $C_5$ (\texttt{\&DKMME?}) & \mhcirc \\
+twin (\texttt{\&DKLMI?}) & \mhcirctwin \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The refinement $\dwlp$ sees digons, and the witness of part (a) has
+digons on one side only. The incomparability nevertheless persists, one
+size up, and exactly there:
+
+\begin{theorem}\label{thm:dwlplus}
+The directed $6$-cycle $C_6$ and the disjoint union $C_3 \sqcup C_3$ of
+two directed triangles are $\dwlp$-equivalent, and each of $\MH$, $\PH$,
+$\RH$ separates them. Exhaustively, no $\dwlp$-equivalent pair of
+digraphs on at most five vertices is separated by $\MH$ (ranks
+$k \le 3$) or by $\PH_{\le 2}$; hence six vertices is minimal.
+\end{theorem}
+
+\begin{proof}
+Both digraphs are digon-free and $1$-in-$1$-out regular on six vertices,
+so Lemma~\ref{lem:regular} gives $\dwlp$-equivalence. Separations:
+$\PH_0$ and $\RH_0$ count weak components and strong condensation
+components ($1$ versus $2$ each); $\PH_\ast(C_6) = (\QQ, \QQ, 0)$ and
+$\PH_\ast(C_3 \sqcup C_3) = (\QQ^2, \QQ^2, 0)$ (directed cycles have
+$\PH_1 = \QQ$ \cite{GLMY12}; verified exactly by our implementation);
+$\MH_{1,\ast}$ agrees (Lemma~\ref{lem:mh1}) but for instance
+$\MC_{1,3}$-level distances differ and the machine gives, absolutely,
+$\MH_{2,3}(C_3 \sqcup C_3) = \QQ^{6} \ne \QQ^{0} = \MH_{2,3}(C_6)$.
+The exhaustive statement is a direct computation over all $9{,}842$
+digraphs on $3 \le n \le 5$, together with the trivial check that the
+four digraphs on $n \le 2$ are pairwise D-WL-distinguished
+(Section~\ref{sec:landscape}).
+\end{proof}
+
+\section{The first page does not determine the second}\label{sec:e1e2}
+
+\begin{theorem}\label{thm:e1e2}
+Let $X = K_{4 \to 1}$ (four sources, one sink, all four arcs) and
+$Y = K_{2\to 2} \sqcup \ast$ (complete bipartite orientation plus an
+isolated vertex), both on five vertices with four arcs. Then:
+\begin{enumerate}
+\item[(a)] $\MH_{k,l}(X) \cong \MH_{k,l}(Y)$ for \emph{all} $(k,l)$;
+\item[(b)] $\PH_\ast(X) = (\QQ, 0, 0) \ne (\QQ^2, \QQ, 0) = \PH_\ast(Y)$
+and $\RH_\ast(X) = (\QQ, 0, 0, 0) \ne (\QQ^2, \QQ, 0, 0) =
+\RH_\ast(Y)$.
+\end{enumerate}
+Hence the bigraded rank function of the first page of the MPSS determines
+neither its second page nor its target, and magnitude homology does not
+determine weak connectivity. Exhaustively, no pair of digraphs on at most
+four vertices with equal $\MH$ ranks ($k \le 3$, all $l$) has distinct
+$\PH_{\le 2}$, so five vertices is minimal.
+\end{theorem}
+
+\begin{proof}
+Both digraphs are layered with $(n, m) = (5, 4)$;
+Lemma~\ref{lem:sourcesink}(1) gives (a), and
+Lemma~\ref{lem:sourcesink}(2),(3) give (b) with $(c, m{-}n{+}c)$ equal to
+$(1, 0)$ for $X$ and $(2, 1)$ for $Y$. For the MPSS statement: the $E^1$
+pages have equal bigraded ranks by (a), while the $E^2$ page contains
+(reduced) path homology \cite{Asao23,HepworthRoff24} and the target is
+reachability homology \cite{HepworthRoffIMRN}, both of which differ by
+(b). Minimality is the exhaustive $n \le 4$ computation
+(Table~\ref{tab:splits}); note that an equality of the coarser $k \le 3$
+rank function is implied by equality of the full rank function, so the
+exhaustive statement covers the full-rank hypothesis a fortiori.
+\end{proof}
+
+\begin{remark}
+Lemma~\ref{lem:sourcesink} yields infinitely many such pairs: any two
+layered digraphs with equal $(n, m)$ and different $c$ (equivalently,
+different cycle rank $m - n + c$) work. On five vertices with four arcs
+the pair $(X, Y)$ above is the one produced by the exhaustive search. The
+phenomenon is a rank statement about $E^1$: as pages-with-differentials
+the two $E^1$ terms are of course not isomorphic, and the theorem shows
+the differential carries essential information, in the strongest sense
+that it is not recoverable from ranks.
+\end{remark}
+
+\begin{remark}\label{rem:truncation}
+The sweep also finds pairs equal at $k \le 3$ that split at $k = 4$
+(for example \texttt{\&DKCJN?} versus \texttt{\&DKWMM?}, whose $\MH_{4,4}$
+ranks are $4$ and $6$): window equality is genuinely weaker than full
+equality, which is why Theorem~\ref{thm:e1e2} is stated with a
+hand-proved full-rank witness.
+\end{remark}
+
+\section{Beyond distance multisets}\label{sec:beyonddist}
+
+D-WL does not determine directed distances, and distances do not
+determine D-WL (Table~\ref{tab:splits}, rows 3 and 4); the pair
+$(C_4, D_2 \sqcup D_2)$ realizes the first failure. The sharper question
+is whether the homology theories exceed D-WL \emph{only} through
+distances. On at most four vertices the answer is yes: every D-WL class
+split by $\MH$ or $\PH$ is already split by the distance multiset. On
+five vertices the answer is no:
+
+\begin{theorem}\label{thm:beyonddist}
+There exist digraphs on five vertices, minimally, that are
+D-WL-equivalent and have equal multisets of directed distances but are
+separated by $\MH$ and by $\PH$. Witness (machine-verified, exact): the
+symmetric digraph $\overline{C_5}$ of the $5$-cycle
+(arcs $x \to x \pm 2 \bmod 5$; five digons) and its partial-orientation
+twin \texttt{\&DKLMI?} (arcs
+$\{02, 03, 13, 14, 21, 24, 30, 31, 40, 42\}$; three digons). Both are
+$2$-in-$2$-out regular, strongly connected with all $20$ ordered
+distances in $\{1, 2\}$ ($10$ each), and D-WL-equivalent by
+Lemma~\ref{lem:regular}; but $\MH_{2,3}$ has ranks $10$ versus $6$,
+$\MH_{3,4}$ has ranks $30$ versus $26$, and
+$\PH_\ast = (\QQ, \QQ, 0)$ versus $(\QQ, 0, \QQ)$: the twin trades the
+$1$-dimensional hole of $\overline{C_5}$ for a $2$-dimensional one.
+Exactly three such D-WL-and-distance-equivalent split classes exist on
+five vertices, listed in Appendix~\ref{app:witnesses}.
+\end{theorem}
+
+\begin{proof}
+Regularity, distances, digon counts, and D-WL-equivalence are finite
+checks stated in the theorem (the distance claim follows since each
+vertex has two out-neighbors and reaches the remaining two vertices in
+two steps; Lemma~\ref{lem:regular} applies). The homology inequalities
+are exact machine computations, absolute by
+Section~\ref{subsec:windows}; the verification script in the repository
+recomputes all invariants of this pair, including the per-witness Euler
+characteristic identity, in seconds. Minimality is the exhaustive
+$n \le 4$ statement above.
+\end{proof}
+
+\begin{remark}
+$\overline{C_5}$ carries the magnitude homology of the $5$-cycle in the
+sense of Hepworth--Willerton (a symmetric digraph's quasimetric is the
+graph metric). The twin is not a circulant: a circulant digraph
+$\mathrm{Circ}(5; S)$ with $|S| = 2$ has either zero or five digons
+(according as $S \cap (-S)$ is empty or all of $S$), never three.
+\end{remark}
+
+\begin{remark}\label{rem:digons}
+All three witness classes of Theorem~\ref{thm:beyonddist} pair digraphs
+with different digon counts ($5$ versus $3$ in each), so the
+reciprocity-aware $\dwlp$ separates each of them; indeed, exhaustively on
+$n \le 5$, no $(\dwlp, \text{distance})$-equivalent pair is separated by
+$\MH$ ($k \le 3$) at all. What magnitude homology detects here beyond
+D-WL and distances is, at minimum, reciprocity structure; whether it
+detects more on larger digraphs is Question~\ref{q:dwlplusdist}.
+\end{remark}
+
+\section{The landscape on at most five vertices}\label{sec:landscape}
+
+\begin{table}[t]
+\centering
+\caption{Number of equivalence classes induced on the isomorphism classes
+of digraphs by each invariant (machine-generated). ``dist'' is the
+multiset of ordered directed distances; ``all three'' is the joint
+$(\MH_{k\le3}, \PH_{\le 2}, \RH_{\le 3})$ class.}
+\label{tab:classes}
+\tabclasscounts
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{Refinement failures: number of equivalence classes of the first
+invariant that split into two or more classes of the second
+(machine-generated). A zero row is an exhaustive determination statement
+for that $n$ and those windows.}
+\label{tab:splits}
+\tabsplits
+\end{table}
+
+Tables~\ref{tab:classes} and \ref{tab:splits} summarize the exhaustive
+sweep. Beyond the theorems above, three features are worth recording.
+
+First, D-WL is nearly complete on this range ($9{,}567$ classes out of
+$9{,}608$ at $n = 5$), consistent with the classical almost-sure
+completeness of color refinement; the homology theories are far coarser
+as graph-level summaries. Their value is therefore not raw separating
+power but the incomparability established above: what they see, D-WL can
+miss entirely.
+
+Second, within the MPSS family: $\PH$ does not determine $\RH$ (one
+class splits at $n = 4$, three at $n = 5$), but $\MH$ and $\PH$
+\emph{jointly} determine $\RH$ throughout the range, in the computed
+windows; internally, the joint $(\MH, \PH, \RH)$ partition at $n = 5$
+has exactly two more classes than the $\MH$ partition, and both extra
+splits are the $E^1$-versus-$E^2$ witnesses of Section~\ref{sec:e1e2}.
+
+\begin{question}\label{q:mhphrh}
+Do the bigraded ranks of $\MH$ together with $\PH_\ast$ determine
+$\RH_\ast$ for all digraphs? (True for all digraphs on at most five
+vertices in the computed windows.)
+\end{question}
+
+\begin{question}\label{q:dwlplusdist}
+Is there a pair of $\dwlp$-equivalent digraphs with equal directed
+distance multisets separated by magnitude homology? (None exist on at
+most five vertices; by Theorem~\ref{thm:dwlplus} the analogous question
+without the distance condition has answer yes, minimally at $n = 6$.)
+\end{question}
+
+\subsection*{Methodology and verification}
+
+All digraphs were enumerated with nauty (\texttt{geng | directg})
+\cite{nauty}; counts match OEIS A000273. All boundary matrices are
+integer matrices and all ranks are computed by fraction-free Gaussian
+elimination over $\QQ$; no floating point is used anywhere. The
+implementation is validated by a test suite of $69$ checks against
+independently known values: the graded Euler characteristic of $\MH$
+against the magnitude power series (computed independently from the
+similarity matrix) across all gradings $l \le 6$ on seven digraphs and
+graphs; Hepworth--Willerton diagonality and ranks for complete graphs;
+$\partial^2 = 0$ for the regularized path boundary on all $218$
+digraphs with $n = 4$; the standard path homology examples of
+\cite{GLMY12} (directed cycles, filled and unfilled triangles and
+squares); and contractibility statements for reachability homology. The
+star witnesses of each theorem were additionally re-verified in isolation
+with extended windows ($k \le 5$, $l \le 10$ for magnitude homology) and
+per-witness Euler characteristic checks.
+
+\section{Discussion}\label{sec:discussion}
+
+\paragraph{Implications for directed graph learning.}
+The invariants of the MPSS are neither stronger nor weaker than the
+refinement bound governing standard directed message passing: they
+separate D-WL-equivalent digraphs already at four vertices (and even
+$\dwlp$-equivalent ones at six), while missing distinctions (weak
+connectivity, degree profiles) that one round of refinement sees. For
+feature design the conclusion is symmetric: homological features are
+candidates to add genuinely new signal to directed MPNNs, exactly as
+persistent homology is for undirected GNNs \cite{BallesterRieck25}, but
+they cannot replace refinement. The beyond-distance witnesses sharpen
+this: part of what magnitude homology adds is reciprocity structure,
+which standard D-WL provably misses and which practical architectures
+handle by edge-typing; Question~\ref{q:dwlplusdist} asks whether
+magnitude homology sees beyond even that.
+
+\paragraph{Implications within the MPSS.}
+Theorem~\ref{thm:e1e2} shows in the strongest rank-level sense that the
+$E^1$ differential of the MPSS carries information: two digraphs can have
+identical $E^1$ rank functions and different $E^2$ pages, indeed
+different limits. The layered family of Lemma~\ref{lem:sourcesink} may be
+of independent interest as the locus where $E^1$ degenerates to counting
+while $E^2$ recovers the topology of the underlying graph.
+
+\paragraph{Limitations.}
+Exhaustive claims are limited to $n \le 5$ and to the stated windows
+(equalities only; inequalities are absolute). We compare against D-WL and
+$\dwlp$, not against the higher levels of a directed WL hierarchy; a
+directed analogue of the $k$-WL placement of \cite{BallesterRieck25}, and
+the extension from unfiltered digraph homology to persistent path
+homology \cite{ChowdhuryMemoli18} and persistent magnitude homology
+\cite{BiFengLiWu26} on weighted digraphs, are natural next steps. Our
+lower bounds transfer: any invariant that specializes to $\MH$, $\PH$, or
+$\RH$ at a fixed filtration value inherits the corresponding
+separations.
+
+\paragraph{Data and code availability.}
+The full implementation (exact-arithmetic magnitude, path, and
+reachability homology of digraphs; D-WL and $\dwlp$; enumeration and
+analysis drivers), all sweep outputs, and scripts reproducing every
+number and table in this paper are available at
+\url{https://github.com/krishnatheaverage/mpss-dwl-expressivity}.
+
+\begin{appendices}
+
+\section{Witness data}\label{app:witnesses}
+
+Digraphs are given in nauty digraph6 format together with arc lists on
+vertex set $\{0, \dots, 4\}$; $uv$ denotes the arc $u \to v$. The three
+D-WL-and-distance-equivalent classes on five vertices split by magnitude
+homology (Theorem~\ref{thm:beyonddist}) are represented by:
+
+\beyonddistpairs
+
+\medskip
+In each pair the first digraph has five digons and the second has three.
+The first pair is the star witness of Theorem~\ref{thm:beyonddist}; in
+the remaining two pairs the path homology dimensions $(\PH_0, \PH_1,
+\PH_2)$ agree, so the separation there is by magnitude homology alone.
+
+\end{appendices}
+
+\bibliography{refs}
+
+\end{document}
