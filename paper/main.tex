@@ -57,10 +57,13 @@ WL hierarchy. First, the families are incomparable: the directed $4$-cycle
 and the disjoint union of two digons are D-WL-equivalent but are separated
 by all three homology theories, while an in-star and a directed path of
 length two are separated by D-WL although all three homology theories
-agree; by exhaustive exact computation over all $9{,}842$ digraphs on
-three, four, and five vertices, both witnesses are minimal. The incomparability
+agree; by exhaustive exact computation over all $1{,}550{,}786$ digraphs
+on three to six vertices, both witnesses are minimal. The incomparability
 persists for the reciprocity-aware refinement $\dwlp$, with minimal witness
-exactly at six vertices. Second, the bigraded rank function of the first
+exactly at six vertices, and indeed magnitude and path homology separate
+six-vertex pairs on which $\dwlp$ \emph{and} the distance multiset agree,
+by detecting asymmetric round-trip structure that survives geodesic
+filling. Second, the bigraded rank function of the first
 page of the MPSS does not determine the second page: any two digraphs in
 which every vertex is a source or a sink and which share vertex and arc
 counts have isomorphic magnitude homology in every bidegree, yet path
@@ -125,9 +128,10 @@ This paper carries out the comparison. Our contributions are as follows;
 throughout, $\MH$, $\PH$, $\RH$ denote magnitude, path, and reachability
 homology over $\QQ$ (Section~\ref{sec:background}), and all computational
 claims are exact rational computations, exhaustive over all digraphs on
-three, four, and five vertices up to isomorphism ($16 + 218 + 9{,}608 =
-9{,}842$ digraphs; the four digraphs on at most two vertices are pairwise
-D-WL-distinguished, so all minimality thresholds are meaningful).
+three to six vertices up to isomorphism
+($16 + 218 + 9{,}608 + 1{,}540{,}944 = 1{,}550{,}786$ digraphs; the four
+digraphs on at most two vertices are pairwise D-WL-distinguished, so all
+minimality thresholds are meaningful).
 
 \begin{enumerate}
 \item \textbf{Incomparability} (Theorem~\ref{thm:incomparable}). D-WL and
@@ -158,11 +162,15 @@ separates D-WL-equivalent pairs with \emph{equal} distance multisets:
 minimally, on five vertices, the symmetric digraph of the $5$-cycle
 against a partial orientation with three digons, where path homology even
 distinguishes a $1$-dimensional from a $2$-dimensional hole. All such
-witnesses on at most five vertices carry unequal digon counts, and the
+witnesses on at most five vertices carry unequal digon counts, so the
 reciprocity-aware $\dwlp$ together with distances subsumes the homology
-package in this range; whether magnitude homology exceeds
-$(\dwlp,\text{distances})$ on larger digraphs is open
-(Question~\ref{q:dwlplusdist}).
+package in that range; but at six vertices, minimally, magnitude
+homology and path homology separate even
+$(\dwlp,\text{distance})$-equivalent pairs
+(Theorem~\ref{thm:beyonddwlp}): what they detect is asymmetric
+round-trip structure modulo geodesic fillability
+(Remark~\ref{rem:roundtripdepth}), which arc-typing by reciprocation
+cannot see.
 \item \textbf{The mechanism} (Section~\ref{sec:mech}). Building on the
 degree-two basis of Ivanov and Mukoseev \cite{IvanovMukoseev24}, we give
 a midpoint-graph component formula for $\MH_{2,l}$ with a short direct
@@ -173,10 +181,11 @@ minus distance data, while diagonal summands of $\MH_{2,l}$ count
 directed round trips, a directed-girth and reciprocity signal
 (cf.~\cite{AHK24}) that neither D-WL nor distances retain.
 \item \textbf{The landscape} (Section~\ref{sec:landscape}). We tabulate
-the partition of all $9{,}842$ digraphs on at most five vertices induced
-by each invariant and each pairwise refinement relation, including that
-$\PH$ does not determine $\RH$, while $\MH$ and $\PH$ jointly determine
-$\RH$ throughout this range (Question~\ref{q:mhphrh}).
+the partition of all $1{,}550{,}786$ digraphs on at most six vertices
+induced by each invariant and each pairwise refinement relation,
+including that $\PH$ does not determine $\RH$, while $\MH$ and $\PH$
+jointly determine $\RH$ throughout this range
+(Question~\ref{q:mhphrh}).
 \item \textbf{Software.} The exact-arithmetic toolkit and all data are
 released; to our knowledge it is the first public implementation
 computing magnitude homology of general digraphs, and the first computing
@@ -484,7 +493,8 @@ The directed $6$-cycle $C_6$ and the disjoint union $C_3 \sqcup C_3$ of
 two directed triangles are $\dwlp$-equivalent, and each of $\MH$, $\PH$,
 $\RH$ separates them. Exhaustively, no $\dwlp$-equivalent pair of
 digraphs on at most five vertices is separated by $\MH$ (ranks
-$k \le 3$) or by $\PH_{\le 2}$; hence six vertices is minimal.
+$k \le 3$) or by $\PH_{\le 2}$; hence six vertices is minimal. There,
+exactly $140$ $\dwlp$-classes are split by $\MH$ and $38$ by $\PH$.
 \end{theorem}
 
 \begin{proof}
@@ -499,7 +509,8 @@ $\MC_{1,3}$-level distances differ and the machine gives, absolutely,
 $\MH_{2,3}(C_3 \sqcup C_3) = \QQ^{6} \ne \QQ^{0} = \MH_{2,3}(C_6)$.
 The exhaustive statement is a direct computation over all $9{,}842$
 digraphs on $3 \le n \le 5$, together with the trivial check that the
-four digraphs on $n \le 2$ are pairwise D-WL-distinguished
+four digraphs on $n \le 2$ are pairwise D-WL-distinguished; the $n = 6$
+split counts come from the exhaustive $n = 6$ sweep
 (Section~\ref{sec:landscape}).
 \end{proof}
 
@@ -606,17 +617,60 @@ $\mathrm{Circ}(5; S)$ with $|S| = 2$ has either zero or five digons
 \begin{remark}\label{rem:digons}
 All three witness classes of Theorem~\ref{thm:beyonddist} pair digraphs
 with different digon counts ($5$ versus $3$ in each), so the
-reciprocity-aware $\dwlp$ separates each of them; indeed, exhaustively on
+reciprocity-aware $\dwlp$ separates each of them, and exhaustively on
 $n \le 5$, no $(\dwlp, \text{distance})$-equivalent pair is separated by
-$\MH$ ($k \le 3$) at all. What magnitude homology detects here beyond
-D-WL and distances is, at minimum, reciprocity structure; whether it
-detects more on larger digraphs is Question~\ref{q:dwlplusdist}.
+$\MH$ ($k \le 3$) at all. One size up this changes:
+\end{remark}
+
+\begin{theorem}\label{thm:beyonddwlp}
+There exist digraphs on six vertices, minimally, that are
+$\dwlp$-equivalent and have equal multisets of directed distances but
+are separated by $\MH$ and by $\PH$. Witness (machine-verified by two
+independent implementations, exact): the digraphs
+\texttt{\&EEDBaHS} and \texttt{\&EEDB`KQ} of
+Appendix~\ref{app:witnesses}. Both have twelve arcs, three digons,
+out-degree $2$ at every vertex, in-degree sequence $(1,1,1,3,3,3)$,
+identical distance multisets ($12 \times 1$, $12 \times 2$,
+$6 \times 3$), and both are strongly connected; but
+$\MH_{2,3} = \QQ^6$ versus $0$, and
+$\PH_\ast = (\QQ, \QQ, 0)$ versus $(\QQ, 0, \QQ^2)$. Exactly $24$ such
+$(\dwlp, \text{distance})$-equivalent classes on six vertices are split
+by $\MH$; none exist on at most five vertices.
+\end{theorem}
+
+\begin{proof}
+Finite checks and exact machine computations, as in
+Theorem~\ref{thm:beyonddist}; every reported witness was re-verified
+with the independent dense implementation and structural (digest-free)
+$\dwlp$ comparison. Minimality is the exhaustive $n \le 5$ statement of
+Remark~\ref{rem:digons}.
+\end{proof}
+
+\begin{remark}\label{rem:roundtripdepth}
+The mechanism (Section~\ref{sec:mech}) identifies what is being
+detected, and it is finer than counting. The first witness has return
+distances $(2,2,2,3,3,3)$ on its six one-way arcs, the three return-$2$
+arcs forming the directed triangle $3 \to 4 \to 5 \to 3$; the second
+has return distance $2$ on all six. Both therefore abound in
+asymmetric length-$3$ round trips, but in the second witness every
+such round-trip configuration is pinned in the sense of
+Definition~\ref{def:midpointgraph} (geodesically fillable), so its
+diagonal contribution to $\MH_{2,3}$ vanishes, while the one-way
+triangle of the first survives unpinned (three diagonal plus three
+off-diagonal classes). Two things follow. First, what degree-two
+magnitude homology sees beyond $(\dwlp, \text{distances})$ is
+round-trip structure \emph{modulo geodesic fillability}, not any raw
+count of reciprocated arcs. Second, the return-distance profiles of
+the two witnesses differ, so the arc-typing refinement $\dwl^{r}$ of
+Question~\ref{q:returntyped} does separate this pair; whether it
+subsumes the degree-two signal everywhere is exactly that question.
 \end{remark}
 
 \section{The mechanism: degree-two magnitude homology}\label{sec:mech}
 
 The separations of Theorems~\ref{thm:incomparable}, \ref{thm:dwlplus},
-and \ref{thm:beyonddist} all occur in magnitude homology of degree two.
+\ref{thm:beyonddist}, and \ref{thm:beyonddwlp} all occur in magnitude
+homology of degree two.
 This section explains why, using a component-counting description of
 $\MH_{2,l}$. A complete basis description of the second magnitude
 homology of a digraph was recently given by Ivanov and Mukoseev
@@ -690,8 +744,9 @@ $\dim\MH_{2,l}(a,b) = (|V| - 1) - (|V| - c) = c - 1$.
 
 Beyond the proof above, Proposition~\ref{prop:mh2structure} was
 verified mechanically against the general implementation on all
-$9{,}842$ digraphs with $3 \le n \le 5$, in every grading, with zero
-mismatches.
+$9{,}842$ digraphs with $3 \le n \le 5$, in every grading, and
+Corollary~\ref{cor:mh22} additionally on all $1{,}540{,}944$ digraphs
+with $n = 6$, with zero mismatches in every case.
 
 \begin{corollary}\label{cor:mh22}
 For every digraph,
@@ -770,7 +825,7 @@ that D-WL (which reads in- and out-neighborhoods separately) and the
 distance multiset both discard.
 \end{remark}
 
-\section{The landscape on at most five vertices}\label{sec:landscape}
+\section{The landscape on at most six vertices}\label{sec:landscape}
 
 \begin{table}[t]
 \centering
@@ -793,46 +848,63 @@ for that $n$ and those windows.}
 \end{table}
 
 Tables~\ref{tab:classes} and \ref{tab:splits} summarize the exhaustive
-sweep. Beyond the theorems above, three features are worth recording.
+sweep. Beyond the theorems above, two features are worth recording.
 
 First, D-WL is nearly complete on this range ($9{,}567$ classes out of
-$9{,}608$ at $n = 5$), consistent with the classical almost-sure
-completeness of color refinement; the homology theories are far coarser
-as graph-level summaries. Their value is therefore not raw separating
-power but the incomparability established above: what they see, D-WL can
-miss entirely.
+$9{,}608$ at $n = 5$; $1{,}539{,}145$ out of $1{,}540{,}944$ at
+$n = 6$, and $\dwlp$ reaches $1{,}540{,}606$), consistent with the
+classical almost-sure completeness of color refinement; the homology
+theories are far coarser as graph-level summaries ($75{,}221$ $\MH$
+classes, $21$ $\PH$ classes, $14$ $\RH$ classes at $n = 6$). Their
+value is therefore not raw separating power but the incomparability
+established above: what they see, refinement can miss entirely.
 
 Second, within the MPSS family: $\PH$ does not determine $\RH$ (one
-class splits at $n = 4$, three at $n = 5$), but $\MH$ and $\PH$
-\emph{jointly} determine $\RH$ throughout the range, in the computed
-windows; internally, the joint $(\MH, \PH, \RH)$ partition at $n = 5$
-has exactly two more classes than the $\MH$ partition, and both extra
-splits are the $E^1$-versus-$E^2$ witnesses of Section~\ref{sec:e1e2}.
+class splits at $n = 4$, three at $n = 5$, nine at $n = 6$), but $\MH$
+and $\PH$ \emph{jointly} determine $\RH$ throughout the range, in the
+computed windows; internally, the joint $(\MH, \PH, \RH)$ partition at
+$n = 5$ has exactly two more classes than the $\MH$ partition, and both
+extra splits are the $E^1$-versus-$E^2$ witnesses of
+Section~\ref{sec:e1e2}. The $E^1$-versus-$E^2$ phenomenon itself
+becomes abundant one size up: $1{,}631$ $\MH$-classes split by $\PH$ at
+$n = 6$.
 
 \begin{question}\label{q:mhphrh}
 Do the bigraded ranks of $\MH$ together with $\PH_\ast$ determine
-$\RH_\ast$ for all digraphs? (True for all digraphs on at most five
-vertices in the computed windows.)
+$\RH_\ast$ for all digraphs? (True for all $1{,}550{,}786$ digraphs on
+at most six vertices in the computed windows.)
 \end{question}
 
-\begin{question}\label{q:dwlplusdist}
-Is there a pair of $\dwlp$-equivalent digraphs with equal directed
-distance multisets separated by magnitude homology? (None exist on at
-most five vertices; by Theorem~\ref{thm:dwlplus} the analogous question
-without the distance condition has answer yes, minimally at $n = 6$.)
+\begin{question}\label{q:returntyped}
+Let $\dwl^{r}$ denote directed refinement with every arc typed by the
+directed distance from its head back to its tail (its return distance;
+$\dwlp$ is the coarsening that only distinguishes return distance $1$
+from $> 1$). Does $(\dwl^{r}, \text{distances})$ subsume degree-two
+magnitude homology, or does the pattern of
+Theorems~\ref{thm:beyonddist} and \ref{thm:beyonddwlp} continue at some
+larger $n$?
 \end{question}
 
 \subsection*{Methodology and verification}
 
 All digraphs were enumerated with nauty (\texttt{geng | directg})
-\cite{nauty}; counts match OEIS A000273. All boundary matrices are
+\cite{nauty}; counts match OEIS A000273 ($16$, $218$, $9{,}608$,
+$1{,}540{,}944$ for $n = 3, \dots, 6$). All boundary matrices are
 integer matrices and all ranks are computed exactly over $\QQ$; no
 floating point is used anywhere. Two independent implementations exist
 (a dense Fraction-based one and a sparse fraction-free one sharing no
 linear algebra code) and agree on all $218$ digraphs with $n = 4$ and a
 $400$-digraph sample at $n = 5$; the degree-two formulas of
 Section~\ref{sec:mech} were additionally verified against the general
-implementation on all $9{,}842$ digraphs in every grading. The
+implementation on all $9{,}842$ digraphs with $n \le 5$ in every
+grading, and the $\MH_{2,2}$ formula on all $1{,}540{,}944$ digraphs
+with $n = 6$. The $n = 6$ sweep ($25$ minutes on nine worker processes)
+stores canonically digested refinement histories; a digest collision
+could only merge two classes, never separate equal ones, so no reported
+separation can be an artifact, and every witness pair claimed in this
+paper was re-verified from scratch with the independent dense
+implementation and digest-free structural refinement comparison ($42$
+pairs, all confirmed). The
 implementation is validated by a test suite of $69$ checks against
 independently known values: the graded Euler characteristic of $\MH$
 against the magnitude power series (computed independently from the
@@ -862,9 +934,10 @@ this: what magnitude homology adds over refinement-plus-distances is, in
 degree two, exactly the directed round-trip structure counted by the
 diagonal summands of Proposition~\ref{prop:mh2structure} (girth and
 reciprocity), which standard D-WL provably misses and which practical
-architectures partially recover by edge-typing reciprocal arcs;
-Question~\ref{q:dwlplusdist} asks whether magnitude homology sees beyond
-even that.
+architectures only partially recover by edge-typing reciprocal arcs:
+Theorem~\ref{thm:beyonddwlp} shows that unpinned round-trip structure
+survives even that typing, and Question~\ref{q:returntyped} asks for the
+refinement level at which the degree-two signal is finally absorbed.
 
 \paragraph{Implications within the MPSS.}
 Theorem~\ref{thm:e1e2} shows in the strongest rank-level sense that the
@@ -875,7 +948,7 @@ of independent interest as the locus where $E^1$ degenerates to counting
 while $E^2$ recovers the topology of the underlying graph.
 
 \paragraph{Limitations.}
-Exhaustive claims are limited to $n \le 5$ and to the stated windows
+Exhaustive claims are limited to $n \le 6$ and to the stated windows
 (equalities only; inequalities are absolute). We compare against D-WL and
 $\dwlp$, not against the higher levels of a directed WL hierarchy; a
 directed analogue of the $k$-WL placement of \cite{BallesterRieck25}, and
@@ -909,6 +982,21 @@ In each pair the first digraph has five digons and the second has three.
 The first pair is the star witness of Theorem~\ref{thm:beyonddist}; in
 the remaining two pairs the path homology dimensions $(\PH_0, \PH_1,
 \PH_2)$ agree, so the separation there is by magnitude homology alone.
+
+\medskip
+The witness pair of Theorem~\ref{thm:beyonddwlp}
+($\dwlp$-equivalent, distance-equivalent, on vertex set
+$\{0, \dots, 5\}$):
+
+\medskip
+\texttt{\&EEDBaHS}: arcs $\{03, 04, 13, 15, 24, 25, 30, 34, 42, 45,
+51, 53\}$; digons $\{0,3\}$, $\{1,5\}$, $\{2,4\}$; one-way arcs $04$,
+$13$, $25$ with return distance $3$ and $34$, $45$, $53$ (a directed
+triangle) with return distance $2$.
+
+\texttt{\&EEDB`KQ}: arcs $\{03, 04, 13, 15, 24, 25, 30, 35, 42, 43,
+51, 54\}$; digons $\{0,3\}$, $\{1,5\}$, $\{2,4\}$; all six one-way
+arcs $04$, $13$, $25$, $35$, $43$, $54$ have return distance $2$.
 
 \end{appendices}
 

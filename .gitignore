@@ -10,3 +10,5 @@ paper/*.bbl
 paper/*.blg
 paper/*.log
 paper/*.out
+results/sweep_n6_shard*.jsonl
+results/all6.d6

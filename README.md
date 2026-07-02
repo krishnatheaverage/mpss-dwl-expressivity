@@ -58,19 +58,26 @@ The implementation is validated before use, not asserted:
 - **Reachability homology** against Hepworth–Roff contractibility of
   strongly connected digraphs and known small posets.
 
-## Headline findings (all exhaustive on `n <= 5`, exact)
+## Headline findings (all exhaustive on `n <= 6`, 1,550,786 digraphs, exact)
 
 1. D-WL and `{MH, PH, RH}` are **incomparable**; minimal witnesses at
    `n = 4` (homology beats refinement: directed C4 vs. two digons) and
    `n = 3` (refinement beats all three: in-star vs. directed 2-path).
-   Incomparability persists for DWL+, minimal at `n = 6`.
+   Incomparability persists for DWL+, minimal at exactly `n = 6`.
 2. The **E1 rank function does not determine E2**: layered digraphs
    (every vertex a source or sink) with equal vertex/arc counts have
    identical magnitude homology in every bidegree but different path and
-   reachability homology. Minimal at `n = 5`; none at `n <= 4`.
+   reachability homology. Minimal at `n = 5`; abundant at `n = 6`
+   (1,631 split classes).
 3. Magnitude homology separates D-WL-equivalent digraphs with **equal
    directed-distance multisets** (minimal at `n = 5`), e.g. the symmetric
-   digraph of C5 vs. a non-circulant twin.
+   digraph of C5 vs. a non-circulant twin; at `n = 6` it even separates
+   **DWL+-and-distance-equivalent** pairs (24 classes), detecting
+   asymmetric round-trip structure modulo geodesic fillability.
+4. **Degree-2 mechanism**: `MH_{2,2} = sum indeg*outdeg - #(distance-2
+   pairs)` (verified on all 1,550,786 digraphs), and a midpoint-graph
+   component formula for `MH_{2,l}` (cf. Ivanov-Mukoseev) explains every
+   separation above; `MH+PH` jointly determine `RH` on all `n <= 6`.
 
 ## License
 
