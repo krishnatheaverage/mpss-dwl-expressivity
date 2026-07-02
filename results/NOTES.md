@@ -53,8 +53,7 @@ per-round histograms; dist = multiset of off-diagonal directed distances
   poset ~ S^1).
   Machine-checked to k<=5, l<=10 + Euler identity per witness.
 - Second n=5 pair (&DKCJN? vs &DKWMM?) agrees at k<=3 but SPLITS at
-  bidegree (4,4) (ranks 4 vs 6): a truncation-only witness; report it
-  as such, honestly.
+  bidegree (4,4) (ranks 4 vs 6): a truncation-only witness.
 
 ## T3. MH separates beyond D-WL and beyond distances
 
@@ -90,18 +89,7 @@ So all fine structure of MH on digraphs lives in degrees k >= 2.
 - Combined MH+PH+RH classes = 1417 = 1415 (MH) + 2 (exactly the T2
   witnesses): internal consistency.
 
-## Status of proof obligations for the paper
-
-1. D-WL equivalence of same-n same-(k_in,k_out) regular digraphs:
-   uniform coloring stable, one-paragraph proof. [TODO write]
-2. T2 star pair: full hand proof (no composable arcs => MH trivial in
-   k>=2; PH/RH of both computed by hand; both tiny). [TODO write]
-3. MH_{1,l} lemma (T4): one-paragraph proof. [TODO write]
-4. C4 vs digons MH: cite Hepworth-Willerton additivity + digon = K_2
-   diagonality; directed C4 small enough to include as worked example.
-   [TODO write]
-5. T3 pair: finite verification; paper cites repo + includes the
-   verification script; state as computer-assisted. [OK as-is]
-6. Asao MPSS indexing conventions for the E1/E2 framing of T2:
-   double-check against Asao's paper before writing that section.
-   [TODO check]
+All proof obligations listed in earlier versions of these notes are
+now discharged in the manuscript (paper/main.tex), which supersedes
+this file; the tables there are regenerated from the sweep data by
+src/gen_tables.py.

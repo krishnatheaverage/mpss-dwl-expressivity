@@ -11,19 +11,19 @@ point is used anywhere.
 
 ## What's here
 
-- `src/maghom.py` — magnitude homology `MH_{k,l}(G)` of a digraph (via the
+- `src/maghom.py`: magnitude homology `MH_{k,l}(G)` of a digraph (via the
   directed shortest-path quasimetric) and the magnitude power series.
-- `src/pathhom.py` — GLMY path homology `PH_p(G)` over Q.
-- `src/reach.py` — reachability homology `RH_*(G)` via the condensation
+- `src/pathhom.py`: GLMY path homology `PH_p(G)` over Q.
+- `src/reach.py`: reachability homology `RH_*(G)` via the condensation
   poset's order complex.
-- `src/dwl.py` — directed 1-WL refinement (D-WL) and the reciprocity-aware
+- `src/dwl.py`: directed 1-WL refinement (D-WL) and the reciprocity-aware
   refinement DWL+.
-- `src/digraph.py` — digraph6 I/O (nauty), directed distances, constructions.
-- `src/sweep.py` — exhaustive sweep over all digraphs on `n` vertices.
-- `src/analyze.py` — equivalence-class counts and witness-pair mining.
-- `src/gen_tables.py` — regenerates `paper/tables_generated.tex`.
-- `tests/test_known.py` — 69 checks against independently known values.
-- `results/` — sweep outputs (`sweep_n{3,4,5}.jsonl`) and `NOTES.md`.
+- `src/digraph.py`: digraph6 I/O (nauty), directed distances, constructions.
+- `src/sweep.py`: exhaustive sweep over all digraphs on `n` vertices.
+- `src/analyze.py`: equivalence-class counts and witness-pair mining.
+- `src/gen_tables.py`: regenerates `paper/tables_generated.tex`.
+- `tests/test_known.py`: 69 checks against independently known values.
+- `results/`: sweep outputs (`sweep_n{3,4,5}.jsonl`) and `NOTES.md`.
 
 To our knowledge this is the first public implementation computing
 magnitude homology of general digraphs, and the first computing all three
@@ -56,9 +56,9 @@ above); `results/analysis_n6.json` carries the distilled counts.
 
 The implementation is validated before use, not asserted:
 
-- **Magnitude homology** against its defining property — the graded Euler
+- **Magnitude homology** against its defining property: the graded Euler
   characteristic equals the magnitude power series (computed independently
-  from the similarity matrix) — for all gradings `l <= 6` on seven
+  from the similarity matrix), for all gradings `l <= 6` on seven
   digraphs/graphs; plus Hepworth–Willerton diagonality and ranks
   `n(n-1)^k` for complete graphs.
 - **Path homology** against `d^2 = 0` exhaustively on all 218 digraphs
