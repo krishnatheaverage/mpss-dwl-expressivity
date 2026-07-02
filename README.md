@@ -36,12 +36,21 @@ Requirements: Python 3.10+ (standard library only) and nauty
 
 ```
 python3 tests/test_known.py          # 69/69 correctness checks
-python3 src/sweep.py 3                # -> results/sweep_n3.jsonl
+python3 tests/test_fast.py           # fast vs slow pipeline cross-check
+python3 src/sweep.py 3               # -> results/sweep_n3.jsonl
 python3 src/sweep.py 4
-python3 src/sweep.py 5                # ~4.5 min (9608 digraphs)
-python3 src/analyze.py 3 4 5          # class counts + witness pairs
-python3 src/gen_tables.py             # -> paper/tables_generated.tex
+python3 src/sweep.py 5               # ~4.5 min (9608 digraphs)
+python3 src/analyze.py 3 4 5         # class counts + witness pairs
+python3 src/sweep6.py enumerate      # -> results/all6.d6 (1.54M digraphs)
+python3 src/sweep6.py run 9          # ~25 min on 9 workers (~300 MB)
+python3 src/analyze6.py              # -> results/analysis_n6.json
+python3 src/verify6.py               # exact re-check of all witnesses
+python3 src/verify_mh22_n6.py        # MH_{2,2} formula on all of n=6
+python3 src/gen_tables.py            # -> paper/tables_generated.tex
 ```
+
+The n=6 shard files are not committed (reproducible by the commands
+above); `results/analysis_n6.json` carries the distilled counts.
 
 ## Correctness
 
