@@ -1,5 +1,7 @@
 # Directed Weisfeiler–Leman vs. the magnitude–path spectral sequence
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21138733.svg)](https://doi.org/10.5281/zenodo.21138733)
+
 Exact-arithmetic comparison of directed color refinement (D-WL) with the
 three homology theories organized by the magnitude–path spectral sequence
 (MPSS) of a digraph: magnitude homology (E1), path homology (an axis of
