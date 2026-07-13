@@ -1,0 +1,52 @@
+\documentclass[11pt]{letter}
+\usepackage[margin=1in]{geometry}
+\signature{Krishna Harish\\Elkins High School, Missouri City, TX\\krishnaharish2009@gmail.com}
+\address{Krishna Harish\\Elkins High School\\Missouri City, TX, USA}
+\begin{document}
+\begin{letter}{The Editors\\Experimental Mathematics}
+
+\opening{Dear Editors,}
+
+Please consider the enclosed manuscript, ``Directed Weisfeiler--Leman
+refinement versus the invariants of the magnitude--path spectral
+sequence,'' for publication in Experimental Mathematics.
+
+The paper is a computer-assisted study of how much two families of
+digraph invariants can tell apart: the homology theories organized by
+the magnitude--path spectral sequence (magnitude, path, and
+reachability homology), and directed Weisfeiler--Leman color
+refinement, the standard bound on the separating power of
+message-passing networks on digraphs. Working from an exhaustive exact
+enumeration of all 1{,}550{,}786 digraphs on up to six vertices, the
+computation locates every minimal witness that distinguishes the two
+families, and this experimental picture then drives the theory: the
+families are incomparable, with minimal witnesses pinned down exactly;
+the bigraded rank function of the first page of the spectral sequence
+determines neither its second page nor its target; and a
+component-counting description of degree-two magnitude homology,
+verified against the full enumeration, supplies closed formulas that
+explain each separation.
+
+The work is experimental in method and exact in execution. All homology
+ranks are computed over the rationals with no floating point; two
+independent implementations sharing no linear algebra code
+cross-validate each other; the degree-two formulas were checked against
+the general implementation on all 1{,}550{,}786 digraphs; and every
+reported witness was re-verified from scratch. The complete toolkit and
+data, with scripts that regenerate every number and table, are public
+on GitHub and archived at Zenodo (DOI~10.5281/zenodo.21138733), so every
+computational claim in the paper is independently reproducible.
+
+To my knowledge this is the first software to compute magnitude, path,
+and reachability homology of general digraphs in a single
+exact-arithmetic framework, and the first placement of these invariants
+relative to directed refinement; the undirected analogue, persistent
+homology against the Weisfeiler--Leman hierarchy, was carried out by
+Ballester and Rieck (2024).
+
+This work is not under consideration elsewhere, and I have no competing
+interests.
+
+\closing{Sincerely,}
+\end{letter}
+\end{document}
